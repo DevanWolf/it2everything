@@ -727,105 +727,108 @@ class ModPlayer:
 		
 		# OK, be warned, there's a LOT of detection going on.
 		# One of these types are REALLY, REALLY rare
-		# (I've only ever seen it in one module,
-		#  and haven't found the tracker in question).
 		if self.chnname == None:
-			if self.respos == 0x78:
-				print "Format: 15-sample SoundTracker"
+			print "Format: 15-sample SoundTracker"
+		elif self.chnname == "M.K.":
+			if self.respos == 0x7F:
+				print "Format: 4-channel ProTracker / ScreamTracker"
+			elif self.respos == 0x78:
+				print "Format: 4-channel unknown ($78)"
 			else:
-				print "Format: 15-sample unknown"
-		elif self.chnname == "M.K." or self.chnname == "M!K!":
-			if self.chnname == "M.K.":
-				if self.respos == 0x7F:
-					print "Format: 4-channel ProTracker / ScreamTracker 3"
-				elif self.respos == 0x78:
-					print "Format: 4-channel unknown ($78)"
-				else:
-					print "Format: 4-channel NoiseTracker / FastTracker"
-			elif self.respos == 0x7F:
+				print "Format: 4-channel NoiseTracker / FastTracker"
+		elif self.chnname == "M!K!":
+			if self.respos == 0x7F:
 				print "Format: 4-channel ProTracker"
 			elif self.respos == 0x78:
 				print "Format: 4-channel unknown (M!K! $78)"
 			else:
-				print "Format: 4-channel FastTracker"
+				print "Format: 4-channel NoiseTracker"
+		elif self.chnname == "PATT":
+			if self.respos == 0x7F:
+				print "Format: 4-channel ProTracker 3"
+			else:
+				print "Format: 4-channel unknown (PATT)"
+		elif self.chnname == "N.T.":
+			print "Format: 4-channel NoiseTracker"
+		elif self.chnname == "M&K!" or self.chnname == "FEST" or self.chnname == "FIST": # FEST is only found in jobbig.mod
+			print "Format: 4-channel NoiseTracker (His Master's Noise)"
+		elif self.chnname == "NSMS" or self.chnname == "LARD": # NSMS is only found in kingdomofpleasure.mod
+			print "Format: 4-channel ProTracker clone"
 		elif self.chnname == "FLT4":
 			if self.respos == 0x7F:
-				print "Format: 4-channel unknown (FLT4 $7F)"
+				print "Format: 4-channel Fairlight unknown ($7F)"
 			elif self.respos == 0x78:
-				print "Format: 4-channel unknown (FLT4 $78)"
+				print "Format: 4-channel Fairlight unknown ($78)"
 			else:
 				print "Format: 4-channel StarTrekker"
+		elif self.chnname == "EXO4":
+			if self.respos == 0x7F:
+				print "Format: 4-channel Exolon unknown ($7F)"
+			elif self.respos == 0x78:
+				print "Format: 4-channel Exolon unknown ($78)"
+			else:
+				print "Format: 4-channel Exolon StarTrekker"
 		elif self.chnname == "FLT8":
 			self.chncount = 8
 			self.flt8 = True
 			if self.respos == 0x7F:
-				print "Format: 8-channel-fairlight unknown ($7F)"
+				print "Format: 8-channel Fairlight unknown ($7F)"
 			elif self.respos == 0x78:
-				print "Format: 8-channel-fairlight unknown ($78)"
+				print "Format: 8-channel Fairlight unknown ($78)"
 			else:
-				print "Format: 8-channel-fairlight StarTrekker"
-		elif self.chnname == "M&K!":
-			# only found in echobea3.mod.
-			# hardly anything plays this bugger.
-			print "Format: Fleg's Module Train-er (unreleased?)"
-		elif self.chnname == "6CHN":
-			self.chncount = 6
-			if self.respos == 0x7F:
-				print "Format: 6-channel ScreamTracker 3"
-			elif self.respos == 0x78:
-				print "Format: 6-channel unknown ($78)"
-			else:
-				print "Format: 6-channel FastTracker"
-		elif self.chnname == "8CHN":
+				print "Format: 8-channel StarTrekker"
+		elif self.chnname == "EXO8":
 			self.chncount = 8
+			self.flt8 = True
 			if self.respos == 0x7F:
-				print "Format: 8-channel ScreamTracker 3"
+				print "Format: 8-channel Exolon unknown ($7F)"
 			elif self.respos == 0x78:
-				print "Format: 8-channel unknown ($78)"
+				print "Format: 8-channel Exolon unknown ($78)"
 			else:
-				print "Format: 8-channel FastTracker"
+				print "Format: 8-channel Exolon StarTrekker"
+		elif self.chnname == "OKTA":
+			self.chncount = 8
+			print "Format: 8-channel Oktalyzer"
 		elif self.chnname == "OCTA":
 			self.chncount = 8
-			print "Format: %i-channel OctaMED(?) ($%02X)" % (self.chncount, self.respos)
-		elif self.chnname == "OKTA" or self.chnname == "CD81":
-			self.chncount = 8
-			print "Format: %i-channel Oktalyzer ($%02X)" % (self.chncount, self.respos)
-		elif self.chnname == "TDZ1" or self.chnname == "TDZ2" or self.chnname == "TDZ3":
+			print "Format: 8-channel OctaMED"
+		elif self.chnname[:1] == "CD" and ord(self.chnname[2]) >= 0x31 and ord(self.chnname[2]) <= 0x39 and self.chnname[3] == "1":
+			self.chncount = ord(self.chnname[2]) - 0x30
+			print "Format: %i-channel Octalyser ($%02X)" % (self.chncount, self.respos)
+		elif self.chnname[:2] == "FA0" and ord(self.chnname[3]) >= 0x31 and ord(self.chnname[3]) <= 0x39:
+			self.chncount = ord(self.chnname[3]) - 0x30
+			print "Format: %i-channel DigiTracker ($%02X)" % (self.chncount, self.respos)
+		elif self.chnname[:2] == "TDZ" and ord(self.chnname[3]) >= 0x31 and ord(self.chnname[3]) <= 0x39:
 			self.chncount = ord(self.chnname[3]) - 0x30
 			print "Format: %i-channel TakeTracker ($%02X)" % (self.chncount, self.respos)
 		elif self.chnname[1:] == "CHN" and ord(self.chnname[0]) >= 0x31 and ord(self.chnname[0]) <= 0x39:
 			self.chncount = ord(self.chnname[0]) - 0x30
-			if self.chncount >= 5:
-				print "Format: %i-channel TakeTracker ($%02X)" % (self.chncount, self.respos)
-			elif self.chncount == 2:
-				if self.respos == 0x7F:
-					print "Format: %i-channel unknown ($7F)" % self.chncount
-				elif self.respos == 0x78:
-					print "Format: %i-channel unknown ($78)" % self.chncount
-				else:
-					print "Format: %i-channel FastTracker" % self.chncount
+			if self.respos == 0x7F:
+				print "Format: %i-channel ScreamTracker" % self.chncount
+			elif self.respos == 0x78:
+				print "Format: %i-channel unknown ($78)" % self.chncount
 			else:
-				print "Format: %i-channel unknown ($%02X)" % (self.chncount, self.respos)
+				print "Format: %i-channel FastTracker/TakeTracker" % self.chncount
 		elif self.chnname[2:] == "CH":
-			self.chncount = ord(self.chnname[0]) - 0x30
-			self.chncount *= 10
-			self.chncount += ord(self.chnname[1]) - 0x30
-			
-			if (self.chncount & 1) == 0 and self.chncount <= 32:
+			self.chncount = ((ord(self.chnname[0]) - 0x30) * 10) + (ord(self.chnname[1]) - 0x30)
+			if self.chncount <= 32:
 				if self.respos == 0x7F:
-					print "Format: %i-channel unknown (CH $7F)" % self.chncount
+					print "Format: %i-channel ScreamTracker (CH $7F)" % self.chncount
 				elif self.respos == 0x78:
 					print "Format: %i-channel unknown (CH $78)" % self.chncount
 				else:
-					print "Format: %i-channel FastTracker" % self.chncount
+					print "Format: %i-channel FastTracker/TakeTracker" % self.chncount
+			else:
+				print "Format: %i-channel OpenMPT" % self.chncount
+		elif self.chnname[2:] == "CN":
+			self.chncount = ((ord(self.chnname[0]) - 0x30) * 10) + (ord(self.chnname[1]) - 0x30)
+			if self.chncount <= 32:
+				print "Format: %i-channel TakeTracker (CN $%02X)" % (self.chncount, self.respos)
 			else:
 				print "Format: %i-channel unknown (CH $%02X)" % (self.chncount, self.respos)
-		elif self.chnname[2:] == "CN":
-			self.chncount = ord(self.chnname[0]) - 0x30
-			self.chncount *= 10
-			self.chncount += ord(self.chnname[1]) - 0x30
-			
-			print "Format: %i-channel TakeTracker (CN $%02X)" % (self.chncount, self.respos)
+		elif self.chnname[3] == "C":
+			self.chncount = ((ord(self.chnname[0]) - 0x30) * 100) + ((ord(self.chnname[1]) - 0x30) * 10) + (ord(self.chnname[2]) - 0x30)
+			print "Format: %i-channel OpenMPT" % self.chncount
 		else:
 			print "Format: unknown ("+self.chnname+")"
 		
